@@ -27,51 +27,47 @@ Carousel.prototype.init = function () {
   );
   smoothScroll(this.scroller, this.scrollLeft, true, true);
 
-  this.handleIndicatorClick();
-  this.handleArrowClick();
+  this.indicatorButtons.forEach((indicator, idx) => {
+    indicator.addEventListener('click', (e) => this.handleIndicatorClick(e, idx));
+  });
+
+  this.arrows.forEach((arrow) => arrow.addEventListener('click', (e) => this.handleArrowClick(e)));
 };
 
 Carousel.prototype.updateNode = function (index, delay, instant) {
   setAriaPressed(this.indicatorButtons, index);
 
   setTimeout(() => {
-    this.scrollLeft = Math.floor(this.scroller.scrollWidth * (index / this.indicatorButtons.length));
+    this.scrollLeft = Math.floor(
+      this.scroller.scrollWidth * (index / this.indicatorButtons.length)
+    );
     smoothScroll(this.scroller, this.scrollLeft, true, instant);
-  }, delay)
-
+  }, delay);
 };
 
-Carousel.prototype.handleIndicatorClick = function () {
+Carousel.prototype.handleIndicatorClick = function (e, idx) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.updateNode(idx, 0);
+};
+
+Carousel.prototype.handleArrowClick = function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+
   this.indicatorButtons.forEach((indicator, idx) => {
-    indicator.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.updateNode(idx, 0);
-    });
+    this.updateCurrent(indicator, e.target.name, idx);
   });
-};
 
-Carousel.prototype.handleArrowClick = function () {
-  this.arrows.forEach((arrow) => {
-    arrow.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+  this.updateNode(this.current, 0);
 
-      this.indicatorButtons.forEach((indicator, idx) => {
-        this.updateCurrent(indicator, e.target.name, idx)
-      });
+  if (this.indicatorButtons.length - 1 === this.current) {
+    this.updateNode(1, 550, true);
+  }
 
-      this.updateNode(this.current, 0)
-
-      if (this.indicatorButtons.length - 1 === this.current) {
-        this.updateNode(1, 550, true)
-      }
-
-      if (this.current === 0) {
-        this.updateNode(this.indicatorButtons.length - 2, 550, true)
-      }
-    });
-  });
+  if (this.current === 0) {
+    this.updateNode(this.indicatorButtons.length - 2, 550, true);
+  }
 };
 
 Carousel.prototype.updateCurrent = function (indicator, name, idx) {
