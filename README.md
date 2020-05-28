@@ -1,2 +1,1 @@
-# slider
-slider
+Preview: [SLIDER](https://carousel-seven.now.sh/)
